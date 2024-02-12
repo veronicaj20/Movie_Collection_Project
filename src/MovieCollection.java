@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class MovieCollection
@@ -163,30 +164,63 @@ public class MovieCollection
         System.out.println("Box office revenue: " + movie.getRevenue());
     }
 
-    private void searchCast()
-    {
-        System.out.println("Enter a cast member: ");
-        String searchTerm = scanner.nextLine();
-        searchTerm = searchTerm.toLowerCase(); // no case sensitivity
-
-        // creates an array list of cast members without the delimiter
-        ArrayList<String> castMembers = new ArrayList<String>();
+    private void searchCast() {
+        ArrayList<String> castArray = new ArrayList<>();
         for (Movie movie : movies) {
-            String cast = movie.getCast();
-            for (int i = 0; i < cast.length(); i++) {
-                int delimiterIdx = cast.indexOf("|");
-                if (delimiterIdx != -1) {
-                    String member = cast.substring(i, delimiterIdx);
-                    if (!castMembers.contains(member)) {
-                        castMembers.add(member);
-                    }
+            String[] castMembers = movie.getCast().split("\\|");
+            for (String member : castMembers) {
+                if (!castArray.contains(member)) { 
+                    castArray.add(member);
                 }
-                cast = cast.substring(delimiterIdx + 1);
             }
         }
 
+        System.out.print("Enter a cast member: ");
+        String searchTerm = scanner.nextLine().toLowerCase();
 
+        ArrayList<String> castResults = new ArrayList<>();
+        for (String castMember : castArray) {
+            if (castMember.toLowerCase().contains(searchTerm)) {
+                castResults.add(castMember);
+            }
+        }
+
+        Collections.sort(castResults);
+        for (int i = 0; i < castResults.size(); i++) {
+            System.out.println((i + 1) + ". " + castResults.get(i));
+        }
+
+        System.out.print("Which cast member would you like to know more about: ");
+        int choice = Integer.parseInt(scanner.nextLine()); 
+        String selectedCastMember = castResults.get(choice - 1);
+
+
+        // list movies for the selected cast member
+        ArrayList<Movie> memberMovies = new ArrayList<>();
+        for (Movie movie : movies) {
+            if (movie.getCast().contains(selectedCastMember)) {
+                memberMovies.add(movie);
+            }
+        }
+
+        sortResults(memberMovies);
+        for (int i = 0; i < memberMovies.size(); i++) {
+            System.out.println((i + 1) + ". " + memberMovies.get(i).getTitle());
+        }
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        int movieChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = memberMovies.get(movieChoice - 1);
+
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
     }
+
 
     private void searchKeywords()
     {
@@ -227,6 +261,21 @@ public class MovieCollection
 
     private void listGenres()
     {
+        ArrayList<String> genreArray = new ArrayList<>();
+        for (Movie movie : movies) {
+            String[] genres = movie.getGenres().split("\\|");
+            for (String g : genres) {
+                if (!genreArray.contains(g)) {
+                    genreArray.add(g);
+                }
+            }
+        }
+
+        System.out.print("Choose a genre: ");
+        String searchTerm = scanner.nextLine().toLowerCase();
+
+
+
 
     }
 
